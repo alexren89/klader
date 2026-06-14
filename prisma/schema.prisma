@@ -1,0 +1,203 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  avatar        String?
+  password      String?
+  role          String    @default("USER")
+  bio           String?
+  location      String?
+  rating        Float     @default(0)
+  totalSales    Int       @default(0)
+  suspended     Boolean   @default(false)
+  vacationMode  Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts             Account[]
+  sessions             Session[]
+  listings             Listing[]
+  buyerOrders          Order[]        @relation("BuyerOrders")
+  sellerOrders         Order[]        @relation("SellerOrders")
+  sentMessages         Message[]      @relation("SentMessages")
+  buyerConversations   Conversation[] @relation("BuyerConversations")
+  sellerConversations  Conversation[] @relation("SellerConversations")
+  givenReviews         Review[]       @relation("ReviewerRelation")
+  receivedReviews      Review[]       @relation("ReviewedRelation")
+  favorites            Favorite[]
+}
+
+model Listing {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  price       Float
+  condition   String
+  size        String
+  brand       String?
+  category    String
+  subcategory String?
+  images      String   @default("[]")
+  status      String   @default("ACTIVE")
+  views       Int      @default(0)
+  hidden      Boolean  @default(false)
+  sellerId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  seller        User           @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  orders        Order[]
+  favorites     Favorite[]
+  conversations Conversation[]
+
+  @@index([status])
+  @@index([category])
+  @@index([sellerId])
+}
+
+model Order {
+  id                    String   @id @default(cuid())
+  buyerId               String
+  sellerId              String
+  listingId             String
+  basePrice             Float
+  commissionRate        Float
+  commissionAmount      Float
+  totalPrice            Float
+  status                String   @default("PENDING")
+  stripePaymentIntentId String?
+  trackingNumber        String?
+  shippingAddress       String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  buyer        User          @relation("BuyerOrders", fields: [buyerId], references: [id])
+  seller       User          @relation("SellerOrders", fields: [sellerId], references: [id])
+  listing      Listing       @relation(fields: [listingId], references: [id])
+  conversation Conversation?
+  review       Review?
+
+  @@index([status])
+  @@index([buyerId])
+  @@index([sellerId])
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  buyerId   String
+  sellerId  String
+  listingId String
+  orderId   String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  buyer    User      @relation("BuyerConversations", fields: [buyerId], references: [id])
+  seller   User      @relation("SellerConversations", fields: [sellerId], references: [id])
+  listing  Listing   @relation(fields: [listingId], references: [id])
+  order    Order?    @relation(fields: [orderId], references: [id])
+  messages Message[]
+
+  @@unique([buyerId, sellerId, listingId])
+  @@index([buyerId])
+  @@index([sellerId])
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  messageType    String   @default("text")
+  offerAmount    Float?
+  offerStatus    String?
+  read           Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation("SentMessages", fields: [senderId], references: [id])
+
+  @@index([conversationId])
+  @@index([senderId])
+}
+
+model CommissionTier {
+  id        String   @id @default(cuid())
+  label     String
+  minPrice  Float
+  maxPrice  Float?
+  rate      Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  reviewerId String
+  reviewedId String
+  orderId    String   @unique
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+
+  reviewer User  @relation("ReviewerRelation", fields: [reviewerId], references: [id])
+  reviewed User  @relation("ReviewedRelation", fields: [reviewedId], references: [id])
+  order    Order @relation(fields: [orderId], references: [id])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  listingId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+}

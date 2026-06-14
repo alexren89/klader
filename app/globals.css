@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-stone-50 text-stone-900 antialiased;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-stone-900 px-5 py-2.5
+           text-sm font-medium text-white transition-all hover:bg-stone-700
+           focus:outline-none focus:ring-2 focus:ring-stone-900 focus:ring-offset-2
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-stone-900 px-5 py-2.5
+           text-sm font-medium text-stone-900 transition-all hover:bg-stone-900 hover:text-white
+           focus:outline-none focus:ring-2 focus:ring-stone-900 focus:ring-offset-2
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5
+           text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100
+           focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  .btn-sand {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-sand-400 px-5 py-2.5
+           text-sm font-medium text-white transition-all hover:bg-sand-500
+           focus:outline-none focus:ring-2 focus:ring-sand-400 focus:ring-offset-2
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm
+           text-stone-900 placeholder-stone-400 transition
+           focus:border-stone-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-stone-200
+           disabled:bg-stone-100 disabled:cursor-not-allowed;
+  }
+
+  .card {
+    @apply rounded-2xl bg-white border border-stone-100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .skeleton {
+    @apply bg-gradient-to-r from-stone-100 via-stone-50 to-stone-100
+           animate-shimmer bg-[length:200%_100%] rounded-xl;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { @apply bg-stone-200 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-stone-300; }
