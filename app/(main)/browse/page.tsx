@@ -23,6 +23,9 @@ const CONDITIONS = [
   { value: "FAIR", label: "Aceptable" },
 ];
 
+const CLOTHING_SIZES = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+const SHOE_SIZES = ["35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46"];
+
 const SORT_OPTIONS = [
   { value: "recent", label: "Más reciente" },
   { value: "price_asc", label: "Precio: menor a mayor" },
@@ -90,7 +93,16 @@ function BrowseContent() {
   }, [fetchListings]);
 
   const updateFilter = (key: string, value: string) => {
-    setFilters((prev) => ({ ...prev, [key]: value, page: 1 }));
+    setFilters((prev) => {
+      const next = { ...prev, [key]: value, page: 1 };
+      // Reset size when switching between calzado and clothing categories
+      if (key === "category") {
+        const wasCalzado = prev.category === "calzado";
+        const isCalzado = value === "calzado";
+        if (wasCalzado !== isCalzado) next.size = "";
+      }
+      return next;
+    });
   };
 
   const clearFilters = () => {
@@ -113,6 +125,7 @@ function BrowseContent() {
     filters.minPrice,
     filters.maxPrice,
   ].filter(Boolean).length;
+
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -218,6 +231,48 @@ function BrowseContent() {
                   ))}
                 </div>
               </div>
+
+              {/* Size */}
+              {filters.category !== "" && (
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-2">Talla</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(filters.category === "calzado" ? SHOE_SIZES : CLOTHING_SIZES).map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => updateFilter("size", filters.size === s ? "" : s)}
+                        className={`rounded-md px-2.5 py-1 text-xs font-medium border transition-colors ${
+                          filters.size === s
+                            ? "bg-sage-600 text-white border-sage-600"
+                            : "bg-white text-gray-600 border-gray-200 hover:border-sage-300"
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {filters.category === "" && (
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-2">Talla ropa</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {CLOTHING_SIZES.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => updateFilter("size", filters.size === s ? "" : s)}
+                        className={`rounded-md px-2.5 py-1 text-xs font-medium border transition-colors ${
+                          filters.size === s
+                            ? "bg-sage-600 text-white border-sage-600"
+                            : "bg-white text-gray-600 border-gray-200 hover:border-sage-300"
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Price range */}
               <div>
