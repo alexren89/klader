@@ -2,7 +2,7 @@ import Stripe from "stripe";
 
 const key = process.env.STRIPE_SECRET_KEY;
 export const stripe = new Stripe(key && key !== "sk_test_..." ? key : "sk_test_placeholder_not_configured", {
-  apiVersion: "2024-11-20.acacia",
+  apiVersion: "2025-02-24.acacia",
   typescript: true,
 });
 
