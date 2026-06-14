@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -30,7 +30,7 @@ export default function ProfilePage() {
       router.push("/login");
       return;
     }
-    setForm({ name: session.user.name || "", bio: "", location: "" });
+    setForm((prev) => ({ ...prev, name: session.user.name || "" }));
 
     Promise.all([
       fetch(`/api/listings?sellerId=${session.user.id}`).then((r) => r.json()),
@@ -123,6 +123,45 @@ export default function ProfilePage() {
       setHidingId(null);
     }
   };
+
+  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const locationDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const locationRef = useRef<HTMLDivElement>(null);
+
+  const fetchLocationSuggestions = (query: string) => {
+    if (locationDebounce.current) clearTimeout(locationDebounce.current);
+    if (!query || query.length < 2) { setLocationSuggestions([]); return; }
+    locationDebounce.current = setTimeout(async () => {
+      setLocationLoading(true);
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=5&accept-language=es`,
+          { headers: { "Accept-Language": "es" } }
+        );
+        const data = await res.json();
+        const suggestions = data.map((item: any) => {
+          const a = item.address;
+          const city = a.city || a.town || a.village || a.municipality || a.county || "";
+          const country = a.country || "";
+          return city && country ? `${city}, ${country}` : item.display_name.split(",").slice(0, 2).join(",").trim();
+        }).filter((v: string, i: number, arr: string[]) => v && arr.indexOf(v) === i);
+        setLocationSuggestions(suggestions);
+      } finally {
+        setLocationLoading(false);
+      }
+    }, 350);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (locationRef.current && !locationRef.current.contains(e.target as Node)) {
+        setLocationSuggestions([]);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   if (!session) return null;
 
@@ -227,13 +266,42 @@ export default function ProfilePage() {
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className="input-field" />
             </div>
-            <div>
+            <div ref={locationRef}>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Ubicación</label>
               <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input type="text" value={form.location}
-                  onChange={(e) => setForm({ ...form, location: e.target.value })}
-                  className="input-field pl-9" placeholder="Ciudad, País" />
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 z-10 pointer-events-none" />
+                {locationLoading && (
+                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 animate-spin" />
+                )}
+                <input
+                  type="text"
+                  value={form.location}
+                  onChange={(e) => {
+                    setForm({ ...form, location: e.target.value });
+                    fetchLocationSuggestions(e.target.value);
+                  }}
+                  onFocus={() => form.location.length >= 2 && fetchLocationSuggestions(form.location)}
+                  className="input-field pl-9"
+                  placeholder="Ciudad, País"
+                  autoComplete="off"
+                />
+                {locationSuggestions.length > 0 && (
+                  <ul className="absolute z-50 mt-1 w-full rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+                    {locationSuggestions.map((s) => (
+                      <li
+                        key={s}
+                        onMouseDown={() => {
+                          setForm({ ...form, location: s });
+                          setLocationSuggestions([]);
+                        }}
+                        className="flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+                      >
+                        <MapPin className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
             <div>
