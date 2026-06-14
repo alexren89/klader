@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -48,16 +50,18 @@ interface Listing {
   seller: { id: string; name: string; image?: string; rating?: number };
 }
 
-function BrowseContent() {
+interface UserSizes { clothingSize: string; shoeSize: string; }
+
+function BrowseContent({ userSizes }: { userSizes: UserSizes }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { data: session } = useSession();
 
   const [listings, setListings] = useState<Listing[]>([]);
   const [total, setTotal] = useState(0);
   const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
+  const [sizesApplied, setSizesApplied] = useState(false);
 
   const [filters, setFilters] = useState({
     search: searchParams.get("search") || "",
@@ -70,24 +74,18 @@ function BrowseContent() {
     page: 1,
   });
 
-  const [userSizes, setUserSizes] = useState<{ clothingSize: string; shoeSize: string }>({ clothingSize: "", shoeSize: "" });
-
+  // Apply user's preferred size once when sizes load
   useEffect(() => {
-    if (!session?.user?.id) return;
-    fetch(`/api/users/${session.user.id}`)
-      .then((r) => r.json())
-      .then((data) => {
-        const sizes = { clothingSize: data.clothingSize || "", shoeSize: data.shoeSize || "" };
-        setUserSizes(sizes);
-        setFilters((prev) => {
-          if (prev.size) return prev; // user already picked a size manually
-          const preferred = prev.category === "calzado" ? sizes.shoeSize : sizes.clothingSize;
-          if (!preferred) return prev;
-          return { ...prev, size: preferred };
-        });
-      });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.user?.id]);
+    if (sizesApplied) return;
+    if (!userSizes.clothingSize && !userSizes.shoeSize) return;
+    setSizesApplied(true);
+    setFilters((prev) => {
+      if (prev.size) return prev;
+      const preferred = prev.category === "calzado" ? userSizes.shoeSize : userSizes.clothingSize;
+      if (!preferred) return prev;
+      return { ...prev, size: preferred };
+    });
+  }, [userSizes, sizesApplied]);
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
@@ -408,6 +406,19 @@ function BrowseContent() {
 }
 
 export default function BrowsePage() {
+  const { data: session } = useSession();
+  const [userSizes, setUserSizes] = useState<UserSizes>({ clothingSize: "", shoeSize: "" });
+
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    fetch(`/api/users/${session.user.id}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setUserSizes({ clothingSize: data.clothingSize || "", shoeSize: data.shoeSize || "" });
+      })
+      .catch(() => {});
+  }, [session?.user?.id]);
+
   return (
     <Suspense fallback={
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -418,7 +429,7 @@ export default function BrowsePage() {
         </div>
       </div>
     }>
-      <BrowseContent />
+      <BrowseContent userSizes={userSizes} />
     </Suspense>
   );
 }
