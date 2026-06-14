@@ -43,6 +43,8 @@ export default function ProfilePage() {
       setVacationMode(vacData.vacationMode ?? false);
       setForm((prev) => ({
         ...prev,
+        bio: userData.bio || "",
+        location: userData.location || "",
         clothingSize: userData.clothingSize || "",
         shoeSize: userData.shoeSize || "",
       }));
