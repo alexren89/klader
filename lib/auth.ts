@@ -62,21 +62,10 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account, trigger, session }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as { role?: string }).role;
-      }
-      // For OAuth sign-ins, fetch id and role from DB since adapter may not populate them
-      if (account && user?.email) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: user.email },
-          select: { id: true, role: true },
-        });
-        if (dbUser) {
-          token.id = dbUser.id;
-          token.role = dbUser.role;
-        }
+        token.role = (user as { role?: string }).role ?? "USER";
       }
       if (trigger === "update" && session) {
         token.name = session.name;
@@ -87,20 +76,9 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
-        session.user.role = token.role as string;
+        session.user.role = (token.role as string) ?? "USER";
       }
       return session;
-    },
-  },
-  events: {
-    async signIn({ user, isNewUser }) {
-      if (isNewUser && user.email) {
-        // New users who sign in via OAuth are automatically email-verified
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { emailVerified: new Date() },
-        });
-      }
     },
   },
 };
