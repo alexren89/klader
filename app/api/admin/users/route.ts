@@ -32,7 +32,7 @@ export async function GET(req: Request) {
         id: true,
         name: true,
         email: true,
-        avatar: true,
+        image: true,
         role: true,
         suspended: true,
         rating: true,

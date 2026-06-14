@@ -18,15 +18,15 @@ interface Message {
   offerStatus?: string;
   read: boolean;
   createdAt: string;
-  sender: { id: string; name: string; avatar?: string };
+  sender: { id: string; name: string; image?: string };
 }
 
 interface Conversation {
   id: string;
   buyerId: string;
   sellerId: string;
-  buyer: { id: string; name: string; avatar?: string };
-  seller: { id: string; name: string; avatar?: string };
+  buyer: { id: string; name: string; image?: string };
+  seller: { id: string; name: string; image?: string };
   listing: { id: string; title: string; images: string[]; price: number; status: string };
 }
 
@@ -143,9 +143,9 @@ export default function ChatPage() {
             <ChevronLeft className="h-5 w-5" />
           </Link>
 
-          {otherUser.avatar ? (
+          {otherUser.image ? (
             <Image
-              src={otherUser.avatar}
+              src={otherUser.image}
               alt={otherUser.name}
               width={36}
               height={36}
@@ -258,9 +258,9 @@ export default function ChatPage() {
                 className={`flex gap-2 ${isMine ? "flex-row-reverse" : ""}`}
               >
                 {!isMine &&
-                  (message.sender.avatar ? (
+                  (message.sender.image ? (
                     <Image
-                      src={message.sender.avatar}
+                      src={message.sender.image}
                       alt=""
                       width={28}
                       height={28}

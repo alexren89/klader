@@ -11,8 +11,8 @@ interface Conversation {
   id: string;
   buyerId: string;
   sellerId: string;
-  buyer: { id: string; name: string; avatar?: string };
-  seller: { id: string; name: string; avatar?: string };
+  buyer: { id: string; name: string; image?: string };
+  seller: { id: string; name: string; image?: string };
   listing: { id: string; title: string; images: string[]; price: number; status: string };
   messages: Array<{ content: string; createdAt: string; senderId: string }>;
   _count: { messages: number };
@@ -81,9 +81,9 @@ export default function MessagesPage() {
                 className="flex items-center gap-3 rounded-xl p-3 hover:bg-gray-50 transition-colors"
               >
                 {/* Other user avatar */}
-                {otherUser.avatar ? (
+                {otherUser.image ? (
                   <Image
-                    src={otherUser.avatar}
+                    src={otherUser.image}
                     alt={otherUser.name}
                     width={44}
                     height={44}

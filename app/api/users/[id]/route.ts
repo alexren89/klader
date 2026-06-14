@@ -12,7 +12,7 @@ export async function GET(
     select: {
       id: true,
       name: true,
-      avatar: true,
+      image: true,
       bio: true,
       location: true,
       rating: true,
@@ -21,7 +21,7 @@ export async function GET(
       listings: {
         where: { status: "ACTIVE", NOT: { hidden: true } },
         include: {
-          seller: { select: { id: true, name: true, avatar: true, rating: true } },
+          seller: { select: { id: true, name: true, image: true, rating: true } },
           _count: { select: { favorites: true } },
         },
         orderBy: { createdAt: "desc" },
@@ -29,7 +29,7 @@ export async function GET(
       },
       receivedReviews: {
         include: {
-          reviewer: { select: { id: true, name: true, avatar: true } },
+          reviewer: { select: { id: true, name: true, image: true } },
         },
         orderBy: { createdAt: "desc" },
         take: 5,

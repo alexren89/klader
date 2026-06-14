@@ -21,7 +21,7 @@ interface Listing {
   seller: {
     id: string;
     name?: string | null;
-    avatar?: string | null;
+    image?: string | null;
     rating?: number;
   };
 }
@@ -143,9 +143,9 @@ export function ListingCard({ listing, showSeller = true }: ListingCardProps) {
           {/* Seller */}
           {showSeller && (
             <div className="mt-2.5 pt-2.5 border-t border-stone-100 flex items-center gap-1.5">
-              {listing.seller.avatar ? (
+              {listing.seller.image ? (
                 <Image
-                  src={listing.seller.avatar}
+                  src={listing.seller.image}
                   alt={listing.seller.name || ""}
                   width={14}
                   height={14}

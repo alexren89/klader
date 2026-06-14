@@ -32,7 +32,7 @@ export default async function ListingPage({
           select: {
             id: true,
             name: true,
-            avatar: true,
+            image: true,
             rating: true,
             totalSales: true,
             bio: true,

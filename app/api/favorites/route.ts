@@ -39,7 +39,7 @@ export async function GET(req: Request) {
     include: {
       listing: {
         include: {
-          seller: { select: { id: true, name: true, avatar: true, rating: true } },
+          seller: { select: { id: true, name: true, image: true, rating: true } },
           _count: { select: { favorites: true } },
         },
       },

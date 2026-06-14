@@ -18,7 +18,7 @@ export default async function PublicProfilePage({
     select: {
       id: true,
       name: true,
-      avatar: true,
+      image: true,
       bio: true,
       location: true,
       rating: true,
@@ -28,7 +28,7 @@ export default async function PublicProfilePage({
         where: { status: "ACTIVE", NOT: { hidden: true } },
         include: {
           seller: {
-            select: { id: true, name: true, avatar: true, rating: true },
+            select: { id: true, name: true, image: true, rating: true },
           },
           _count: { select: { favorites: true } },
         },
@@ -37,7 +37,7 @@ export default async function PublicProfilePage({
       },
       receivedReviews: {
         include: {
-          reviewer: { select: { id: true, name: true, avatar: true } },
+          reviewer: { select: { id: true, name: true, image: true } },
         },
         orderBy: { createdAt: "desc" },
         take: 10,
@@ -52,9 +52,9 @@ export default async function PublicProfilePage({
       {/* Profile header */}
       <div className="card p-6 mb-6">
         <div className="flex items-start gap-5">
-          {user.avatar ? (
+          {user.image ? (
             <Image
-              src={user.avatar}
+              src={user.image}
               alt={user.name || ""}
               width={80}
               height={80}
@@ -135,9 +135,9 @@ export default async function PublicProfilePage({
             {user.receivedReviews.map((review) => (
               <div key={review.id} className="card p-4">
                 <div className="flex items-start gap-3">
-                  {review.reviewer.avatar ? (
+                  {review.reviewer.image ? (
                     <Image
-                      src={review.reviewer.avatar}
+                      src={review.reviewer.image}
                       alt={review.reviewer.name || ""}
                       width={36}
                       height={36}

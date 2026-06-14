@@ -44,7 +44,7 @@ interface Listing {
   seller: {
     id: string;
     name?: string | null;
-    avatar?: string | null;
+    image?: string | null;
     rating: number;
     totalSales: number;
     bio?: string | null;
@@ -331,9 +331,9 @@ export function ListingDetailClient({
               href={`/profile/${listing.seller.id}`}
               className="flex items-center gap-3 hover:opacity-80"
             >
-              {listing.seller.avatar ? (
+              {listing.seller.image ? (
                 <Image
-                  src={listing.seller.avatar}
+                  src={listing.seller.image}
                   alt={listing.seller.name || ""}
                   width={48}
                   height={48}

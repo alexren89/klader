@@ -41,7 +41,7 @@ interface Listing {
   images: string[];
   views: number;
   _count: { favorites: number };
-  seller: { id: string; name: string; avatar?: string; rating?: number };
+  seller: { id: string; name: string; image?: string; rating?: number };
 }
 
 function BrowseContent() {

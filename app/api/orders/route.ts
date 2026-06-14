@@ -19,8 +19,8 @@ export async function GET() {
       ],
     },
     include: {
-      buyer: { select: { id: true, name: true, avatar: true } },
-      seller: { select: { id: true, name: true, avatar: true } },
+      buyer: { select: { id: true, name: true, image: true } },
+      seller: { select: { id: true, name: true, image: true } },
       listing: { select: { id: true, title: true, images: true } },
       review: true,
     },

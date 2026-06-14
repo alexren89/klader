@@ -15,7 +15,7 @@ export async function GET(
         select: {
           id: true,
           name: true,
-          avatar: true,
+          image: true,
           rating: true,
           totalSales: true,
           bio: true,
@@ -68,7 +68,7 @@ export async function PATCH(
     where: { id: params.id },
     data: body,
     include: {
-      seller: { select: { id: true, name: true, avatar: true } },
+      seller: { select: { id: true, name: true, image: true } },
     },
   });
 

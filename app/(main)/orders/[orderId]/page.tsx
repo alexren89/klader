@@ -39,8 +39,8 @@ interface Order {
     description: string;
     images: string[];
   };
-  buyer: { id: string; name: string; email: string; avatar?: string };
-  seller: { id: string; name: string; avatar?: string };
+  buyer: { id: string; name: string; email: string; image?: string };
+  seller: { id: string; name: string; image?: string };
   review?: { id: string; rating: number; comment?: string };
   conversation?: { id: string };
 }
@@ -178,8 +178,8 @@ export default function OrderDetailPage() {
         <div className="card p-4">
           <p className="text-xs text-gray-500 mb-2">Comprador</p>
           <div className="flex items-center gap-2">
-            {order.buyer.avatar ? (
-              <Image src={order.buyer.avatar} alt="" width={32} height={32} className="h-8 w-8 rounded-full object-cover" />
+            {order.buyer.image ? (
+              <Image src={order.buyer.image} alt="" width={32} height={32} className="h-8 w-8 rounded-full object-cover" />
             ) : (
               <div className="h-8 w-8 rounded-full bg-sage-100 flex items-center justify-center text-sage-700 text-xs font-semibold">
                 {order.buyer.name[0]}
@@ -191,8 +191,8 @@ export default function OrderDetailPage() {
         <div className="card p-4">
           <p className="text-xs text-gray-500 mb-2">Vendedor</p>
           <div className="flex items-center gap-2">
-            {order.seller.avatar ? (
-              <Image src={order.seller.avatar} alt="" width={32} height={32} className="h-8 w-8 rounded-full object-cover" />
+            {order.seller.image ? (
+              <Image src={order.seller.image} alt="" width={32} height={32} className="h-8 w-8 rounded-full object-cover" />
             ) : (
               <div className="h-8 w-8 rounded-full bg-earth-100 flex items-center justify-center text-earth-700 text-xs font-semibold">
                 {order.seller.name[0]}

@@ -23,7 +23,7 @@ async function FeaturedListings() {
       seller: { NOT: { vacationMode: true } },
     },
     include: {
-      seller: { select: { id: true, name: true, avatar: true, rating: true } },
+      seller: { select: { id: true, name: true, image: true, rating: true } },
       _count: { select: { favorites: true } },
     },
     orderBy: { createdAt: "desc" },

@@ -18,7 +18,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  avatar?: string;
+  image?: string;
   role: "USER" | "ADMIN";
   suspended: boolean;
   rating: number;
@@ -127,9 +127,9 @@ export default function AdminUsersPage() {
                 <tr key={user.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2.5">
-                      {user.avatar ? (
+                      {user.image ? (
                         <Image
-                          src={user.avatar}
+                          src={user.image}
                           alt={user.name}
                           width={32}
                           height={32}

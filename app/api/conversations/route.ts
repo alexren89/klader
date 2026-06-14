@@ -18,8 +18,8 @@ export async function GET() {
       ],
     },
     include: {
-      buyer: { select: { id: true, name: true, avatar: true } },
-      seller: { select: { id: true, name: true, avatar: true } },
+      buyer: { select: { id: true, name: true, image: true } },
+      seller: { select: { id: true, name: true, image: true } },
       listing: { select: { id: true, title: true, images: true, price: true, status: true } },
       messages: {
         orderBy: { createdAt: "desc" },
@@ -93,8 +93,8 @@ export async function POST(req: Request) {
       listingId,
     },
     include: {
-      buyer: { select: { id: true, name: true, avatar: true } },
-      seller: { select: { id: true, name: true, avatar: true } },
+      buyer: { select: { id: true, name: true, image: true } },
+      seller: { select: { id: true, name: true, image: true } },
       listing: { select: { id: true, title: true, images: true, price: true } },
     },
   });

@@ -57,7 +57,7 @@ export async function GET(
   const messages = await prisma.message.findMany({
     where: { conversationId: params.id },
     include: {
-      sender: { select: { id: true, name: true, avatar: true } },
+      sender: { select: { id: true, name: true, image: true } },
     },
     orderBy: { createdAt: "asc" },
   });
@@ -125,7 +125,7 @@ export async function POST(
         offerStatus: messageType === "offer" ? "pending" : null,
       },
       include: {
-        sender: { select: { id: true, name: true, avatar: true } },
+        sender: { select: { id: true, name: true, image: true } },
       },
     });
 

@@ -80,7 +80,7 @@ export async function GET(req: Request) {
     prisma.listing.findMany({
       where,
       include: {
-        seller: { select: { id: true, name: true, avatar: true, rating: true } },
+        seller: { select: { id: true, name: true, image: true, rating: true } },
         _count: { select: { favorites: true } },
       },
       orderBy,
@@ -128,7 +128,7 @@ export async function POST(req: Request) {
         sellerId: session.user.id,
       },
       include: {
-        seller: { select: { id: true, name: true, avatar: true } },
+        seller: { select: { id: true, name: true, image: true } },
       },
     });
 
