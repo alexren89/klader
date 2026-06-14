@@ -115,14 +115,13 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/listings/new"
-                className="inline-flex items-center gap-2 rounded-pill px-7 text-sm font-semibold transition-all"
+                className="inline-flex items-center gap-2 rounded-pill px-7 text-sm font-semibold transition-all hover:bg-plum-50"
                 style={{
                   border: "1.5px solid var(--plum-300)",
                   color: "var(--brand-primary)",
                   height: 52,
                   background: "transparent",
                 }}
-                onMouseEnter={undefined}
               >
                 Vender ahora
               </Link>
@@ -170,28 +169,12 @@ export default function HomePage() {
             <Link
               key={cat.value}
               href={`/browse?category=${cat.value}`}
-              className="group flex flex-col items-center gap-2 px-3 py-5 transition-all"
-              style={{
-                background: "var(--bg-surface)",
-                borderRadius: 20,
-                border: "1px solid var(--border-subtle)",
-                boxShadow: "var(--shadow-xs)",
-              }}
-              onMouseEnter={e => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.transform = "translateY(-3px)";
-                el.style.boxShadow = "var(--shadow-md)";
-                el.style.borderColor = "var(--plum-200)";
-              }}
-              onMouseLeave={e => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.transform = "";
-                el.style.boxShadow = "var(--shadow-xs)";
-                el.style.borderColor = "var(--border-subtle)";
-              }}
+              className="group flex flex-col items-center gap-2 px-3 py-5 transition-all duration-200
+                         bg-white rounded-[20px] border border-neutral-200 shadow-[0_1px_2px_rgba(35,19,55,0.06)]
+                         hover:-translate-y-1 hover:shadow-[0_6px_18px_rgba(35,19,55,0.10)] hover:border-plum-200"
             >
               <span className="text-2xl">{cat.emoji}</span>
-              <span className="text-[11px] font-semibold transition-colors" style={{ color: "var(--text-secondary)" }}>
+              <span className="text-[11px] font-semibold text-neutral-600 group-hover:text-plum-500 transition-colors">
                 {cat.label}
               </span>
             </Link>
