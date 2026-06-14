@@ -7,21 +7,17 @@ import { ListingCardSkeleton } from "@/components/ui/Skeleton";
 import { Suspense } from "react";
 
 const CATEGORIES = [
-  { label: "Mujer",     value: "mujer",      icon: "👗" },
-  { label: "Hombre",    value: "hombre",     icon: "👔" },
-  { label: "Calzado",   value: "calzado",    icon: "👟" },
-  { label: "Accesorios",value: "accesorios", icon: "👜" },
-  { label: "Deportiva", value: "deportiva",  icon: "🏃" },
-  { label: "Vintage",   value: "vintage",    icon: "✨" },
+  { label: "Mujer",      value: "mujer",      emoji: "👗" },
+  { label: "Hombre",     value: "hombre",     emoji: "👔" },
+  { label: "Calzado",    value: "calzado",    emoji: "👟" },
+  { label: "Accesorios", value: "accesorios", emoji: "👜" },
+  { label: "Deportiva",  value: "deportiva",  emoji: "🏃" },
+  { label: "Vintage",    value: "vintage",    emoji: "✨" },
 ];
 
 async function FeaturedListings() {
   const listings = await prisma.listing.findMany({
-    where: {
-      status: "ACTIVE",
-      NOT: { hidden: true },
-      seller: { NOT: { vacationMode: true } },
-    },
+    where: { status: "ACTIVE", NOT: { hidden: true }, seller: { NOT: { vacationMode: true } } },
     include: {
       seller: { select: { id: true, name: true, image: true, rating: true } },
       _count: { select: { favorites: true } },
@@ -34,7 +30,7 @@ async function FeaturedListings() {
 
   if (transformed.length === 0) {
     return (
-      <div className="py-20 text-center text-stone-400 text-sm">
+      <div className="py-20 text-center text-sm" style={{ color: "var(--text-muted)" }}>
         Aún no hay artículos. ¡Sé el primero en vender!
       </div>
     );
@@ -52,45 +48,82 @@ async function FeaturedListings() {
 function FeaturedListingsSkeleton() {
   return (
     <div className="grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-3 md:grid-cols-4">
-      {Array.from({ length: 8 }).map((_, i) => (
-        <ListingCardSkeleton key={i} />
-      ))}
+      {Array.from({ length: 8 }).map((_, i) => <ListingCardSkeleton key={i} />)}
     </div>
   );
 }
 
 export default function HomePage() {
   return (
-    <div className="bg-stone-50">
+    <div style={{ background: "var(--bg-page)" }}>
 
-      {/* ── Hero ─────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-sand-400">
-        {/* Subtle texture */}
-        <div className="absolute inset-0 opacity-20"
-          style={{ backgroundImage: "radial-gradient(ellipse at 70% 30%, #fff 0%, transparent 60%)" }} />
+      {/* ── Hero ─────────────────────────────────────────────────────── */}
+      <section
+        className="relative overflow-hidden"
+        style={{ background: "var(--plum-50)" }}
+      >
+        {/* Watermark loop mark */}
+        <div
+          className="absolute pointer-events-none select-none"
+          style={{ right: -60, top: -40, opacity: 0.10 }}
+        >
+          <svg width="480" height="480" viewBox="0 0 100 100" fill="none">
+            <path d="M50 14 a36 36 0 1 1 -25.5 10.5" stroke="#231337" strokeWidth="11" strokeLinecap="round" />
+            <circle cx="50" cy="14" r="6.4" fill="#231337" />
+          </svg>
+        </div>
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
           <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/20 px-3 py-1 text-xs font-medium text-white mb-5 backdrop-blur-sm">
+            <span
+              className="inline-flex items-center gap-1.5 rounded-pill px-3 py-1 text-xs font-semibold mb-5"
+              style={{
+                background: "var(--plum-100)",
+                color: "var(--plum-600)",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
+            >
               <Leaf className="h-3 w-3" />
               Moda circular · segunda mano sin complicaciones
             </span>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.05] tracking-tight">
-              Tu armario,<br />reinventado.
+            <h1
+              className="text-5xl sm:text-6xl lg:text-7xl leading-[1.05] mb-5"
+              style={{
+                fontFamily: "var(--font-display, 'Unbounded', sans-serif)",
+                fontWeight: 700,
+                letterSpacing: "-0.03em",
+                color: "var(--plum-900)",
+              }}
+            >
+              Dale ropa<br />
+              <span style={{ color: "var(--brand-primary)" }}>una segunda vida.</span>
             </h1>
 
-            <p className="mt-5 text-lg text-white/75 max-w-lg leading-relaxed">
-              Encuentra piezas únicas a precios increíbles. Vende lo que ya no usas en minutos.
+            <p className="text-lg leading-relaxed mb-8 max-w-lg" style={{ color: "var(--text-secondary)" }}>
+              Compra y vende moda de segunda mano. Directo a tu puerta, con protección al comprador en cada pedido.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/browse"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-stone-900 transition-all hover:bg-stone-100 hover:gap-3 shadow-sm">
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/browse"
+                className="btn-primary"
+                style={{ gap: 8, paddingLeft: 28, paddingRight: 28, height: 52, fontSize: 15 }}
+              >
                 Explorar artículos <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/listings/new"
-                className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-white/20 backdrop-blur-sm">
+              <Link
+                href="/listings/new"
+                className="inline-flex items-center gap-2 rounded-pill px-7 text-sm font-semibold transition-all"
+                style={{
+                  border: "1.5px solid var(--plum-300)",
+                  color: "var(--brand-primary)",
+                  height: 52,
+                  background: "transparent",
+                }}
+                onMouseEnter={undefined}
+              >
                 Vender ahora
               </Link>
             </div>
@@ -98,8 +131,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Trust strip ─────────────────────────────────── */}
-      <div className="bg-white border-b border-stone-100">
+      {/* ── Trust strip ──────────────────────────────────────────────── */}
+      <div style={{ background: "var(--bg-surface)", borderBottom: "1px solid var(--border-subtle)" }}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center gap-10 sm:gap-20 py-3 overflow-x-auto">
             {[
@@ -107,8 +140,9 @@ export default function HomePage() {
               { icon: Zap,         text: "Publicar es gratis" },
               { icon: Leaf,        text: "Moda sostenible" },
             ].map(({ icon: Icon, text }) => (
-              <div key={text} className="flex shrink-0 items-center gap-2 text-xs font-medium text-stone-500">
-                <Icon className="h-3.5 w-3.5 text-sand-500" />
+              <div key={text} className="flex shrink-0 items-center gap-2 text-xs font-medium"
+                style={{ color: "var(--text-muted)" }}>
+                <Icon className="h-3.5 w-3.5" style={{ color: "var(--brand-primary)" }} />
                 {text}
               </div>
             ))}
@@ -116,12 +150,18 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ── Categories ─────────────────────────────────── */}
+      {/* ── Categories ───────────────────────────────────────────────── */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-12 pb-2">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold text-stone-900">Explorar por categoría</h2>
+          <h2
+            className="text-lg"
+            style={{ fontFamily: "var(--font-display)", fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.02em" }}
+          >
+            Explorar por categoría
+          </h2>
           <Link href="/browse"
-            className="text-xs font-medium text-stone-400 hover:text-stone-700 transition-colors flex items-center gap-1">
+            className="text-xs font-semibold flex items-center gap-1 transition-colors"
+            style={{ color: "var(--text-muted)" }}>
             Ver todo <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
@@ -130,10 +170,28 @@ export default function HomePage() {
             <Link
               key={cat.value}
               href={`/browse?category=${cat.value}`}
-              className="group flex flex-col items-center gap-2 rounded-2xl bg-white border border-stone-100 px-3 py-5 shadow-card transition-all hover:shadow-card-hover hover:-translate-y-0.5 hover:border-sand-200"
+              className="group flex flex-col items-center gap-2 px-3 py-5 transition-all"
+              style={{
+                background: "var(--bg-surface)",
+                borderRadius: 20,
+                border: "1px solid var(--border-subtle)",
+                boxShadow: "var(--shadow-xs)",
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.transform = "translateY(-3px)";
+                el.style.boxShadow = "var(--shadow-md)";
+                el.style.borderColor = "var(--plum-200)";
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.transform = "";
+                el.style.boxShadow = "var(--shadow-xs)";
+                el.style.borderColor = "var(--border-subtle)";
+              }}
             >
-              <span className="text-2xl">{cat.icon}</span>
-              <span className="text-[11px] font-semibold text-stone-600 group-hover:text-stone-900 transition-colors">
+              <span className="text-2xl">{cat.emoji}</span>
+              <span className="text-[11px] font-semibold transition-colors" style={{ color: "var(--text-secondary)" }}>
                 {cat.label}
               </span>
             </Link>
@@ -141,15 +199,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Featured listings ──────────────────────────── */}
+      {/* ── Featured listings ─────────────────────────────────────────── */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-lg font-bold text-stone-900">Recién publicados</h2>
-            <p className="text-xs text-stone-400 mt-0.5">Los últimos artículos añadidos</p>
+            <h2
+              className="text-lg"
+              style={{ fontFamily: "var(--font-display)", fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.02em" }}
+            >
+              Recién publicados
+            </h2>
+            <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>Los últimos artículos añadidos</p>
           </div>
           <Link href="/browse"
-            className="inline-flex items-center gap-1 text-xs font-semibold text-stone-900 hover:underline">
+            className="inline-flex items-center gap-1 text-xs font-semibold transition-colors"
+            style={{ color: "var(--brand-primary)" }}>
             Ver todos <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
@@ -159,21 +223,29 @@ export default function HomePage() {
         </Suspense>
       </section>
 
-      {/* ── How it works ───────────────────────────────── */}
-      <section className="bg-sand-400 py-14">
+      {/* ── How it works ──────────────────────────────────────────────── */}
+      <section className="py-14" style={{ background: "var(--brand-primary)" }}>
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-bold text-white mb-8 text-center">¿Cómo funciona?</h2>
+          <h2
+            className="text-xl text-center mb-8 text-white"
+            style={{ fontFamily: "var(--font-display)", fontWeight: 600, letterSpacing: "-0.02em" }}
+          >
+            ¿Cómo funciona?
+          </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {[
-              { num: "01", title: "Publica tu artículo",     desc: "Sube fotos, describe la prenda y fija tu precio. En minutos estará visible." },
-              { num: "02", title: "Vende con seguridad",     desc: "El pago queda en custodia hasta que el comprador confirma la entrega." },
-              { num: "03", title: "Haz el bien al planeta",  desc: "Cada compra de segunda mano reduce el impacto de la industria textil." },
+              { num: "01", title: "Publica tu artículo",    desc: "Sube fotos, describe la prenda y fija tu precio. En minutos estará visible." },
+              { num: "02", title: "Vende con seguridad",    desc: "El pago queda en custodia hasta que el comprador confirma la entrega." },
+              { num: "03", title: "Haz el bien al planeta", desc: "Cada compra de segunda mano reduce el impacto de la industria textil." },
             ].map((step) => (
-              <div key={step.num} className="flex gap-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 p-5">
-                <span className="shrink-0 text-3xl font-black text-white/20">{step.num}</span>
+              <div key={step.num} className="flex gap-4 p-5"
+                style={{ borderRadius: 20, background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.18)" }}>
+                <span className="shrink-0 text-3xl font-black" style={{ color: "rgba(255,255,255,0.20)", fontFamily: "var(--font-display)" }}>
+                  {step.num}
+                </span>
                 <div>
                   <h3 className="font-semibold text-white text-sm mb-1">{step.title}</h3>
-                  <p className="text-xs text-white/65 leading-relaxed">{step.desc}</p>
+                  <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.65)" }}>{step.desc}</p>
                 </div>
               </div>
             ))}
@@ -181,17 +253,23 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── CTA banner ─────────────────────────────────── */}
-      <section className="bg-stone-900 py-14">
+      {/* ── CTA banner ────────────────────────────────────────────────── */}
+      <section className="py-14" style={{ background: "var(--plum-900)" }}>
         <div className="mx-auto max-w-3xl px-4 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+          <h2
+            className="text-2xl sm:text-3xl text-white mb-3"
+            style={{ fontFamily: "var(--font-display)", fontWeight: 600, letterSpacing: "-0.02em" }}
+          >
             ¿Tienes ropa que ya no usas?
           </h2>
-          <p className="text-stone-400 text-sm mb-7">
+          <p className="text-sm mb-7" style={{ color: "rgba(255,255,255,0.55)" }}>
             Únete a miles de vendedores y dale una segunda vida a tu armario.
           </p>
-          <Link href="/listings/new"
-            className="inline-flex items-center gap-2 rounded-full bg-sand-400 px-7 py-3.5 text-sm font-semibold text-white transition-all hover:bg-sand-500 hover:gap-3 shadow-sm">
+          <Link
+            href="/listings/new"
+            className="btn-accent"
+            style={{ paddingLeft: 28, paddingRight: 28, height: 52, fontSize: 15, display: "inline-flex", gap: 8, borderRadius: 999 }}
+          >
             Empezar a vender <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

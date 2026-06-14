@@ -4,7 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { ShoppingBag, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+
+function KladerMark({ size = 36 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" aria-hidden="true">
+      <path d="M50 14 a36 36 0 1 1 -25.5 10.5" stroke="#5C2E8E" strokeWidth="11" strokeLinecap="round" />
+      <circle cx="50" cy="14" r="6.4" fill="#FF7E6B" />
+    </svg>
+  );
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,14 +28,8 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
+      const result = await signIn("credentials", { email, password, redirect: false });
       if (result?.error) {
         setError(result.error);
       } else {
@@ -44,23 +47,31 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sage-50 to-earth-50 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "var(--bg-page)" }}>
       <div className="w-full max-w-md">
         <div className="card p-8">
           {/* Logo */}
-          <div className="flex justify-center mb-6">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sage-600">
-                <ShoppingBag className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-2xl font-bold text-sage-700">klader</span>
+          <div className="flex flex-col items-center gap-2 mb-7">
+            <Link href="/" className="flex items-center gap-2.5">
+              <KladerMark size={40} />
+              <span
+                style={{
+                  fontFamily: "var(--font-display, 'Unbounded', sans-serif)",
+                  fontWeight: 600,
+                  fontSize: 22,
+                  letterSpacing: "-0.02em",
+                  color: "var(--brand-primary)",
+                }}
+              >
+                klader
+              </span>
             </Link>
           </div>
 
-          <h1 className="text-2xl font-bold text-gray-900 text-center mb-1">
+          <h1 className="text-xl font-semibold text-center mb-1" style={{ color: "var(--text-primary)" }}>
             Bienvenido de nuevo
           </h1>
-          <p className="text-sm text-gray-500 text-center mb-6">
+          <p className="text-sm text-center mb-6" style={{ color: "var(--text-muted)" }}>
             Inicia sesión en tu cuenta
           </p>
 
@@ -68,7 +79,13 @@ export default function LoginPage() {
           <button
             onClick={handleGoogle}
             disabled={googleLoading}
-            className="w-full flex items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 text-sm font-medium transition-colors disabled:opacity-50"
+            style={{
+              borderRadius: 10,
+              border: "1.5px solid var(--border-default)",
+              background: "var(--bg-surface)",
+              color: "var(--text-primary)",
+            }}
           >
             {googleLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -84,44 +101,35 @@ export default function LoginPage() {
           </button>
 
           <div className="my-5 flex items-center gap-3">
-            <div className="h-px flex-1 bg-gray-200" />
-            <span className="text-xs text-gray-400">o con email</span>
-            <div className="h-px flex-1 bg-gray-200" />
+            <div className="h-px flex-1" style={{ background: "var(--border-subtle)" }} />
+            <span className="text-xs" style={{ color: "var(--text-muted)" }}>o con email</span>
+            <div className="h-px flex-1" style={{ background: "var(--border-subtle)" }} />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-xl px-4 py-3 text-sm" style={{ background: "#FBE8E8", color: "#D23B3B", border: "1px solid #F5CECE" }}>
                 {error}
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-semibold mb-1.5" style={{ color: "var(--text-primary)" }}>
                 Email
               </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="input-field"
-                placeholder="tu@email.com"
-                required
-                autoComplete="email"
-              />
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                className="input-field" placeholder="tu@email.com" required autoComplete="email" />
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-sm font-medium text-gray-700">
-                  Contraseña
-                </label>
-              </div>
+              <label className="block text-sm font-semibold mb-1.5" style={{ color: "var(--text-primary)" }}>
+                Contraseña
+              </label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   className="input-field pr-10"
                   placeholder="••••••••"
                   required
@@ -130,32 +138,23 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                  style={{ color: "var(--text-muted)" }}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full justify-center py-2.5"
-            >
-              {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : null}
+            <button type="submit" disabled={loading} className="btn-primary w-full">
+              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               Iniciar sesión
             </button>
           </form>
 
-          <p className="mt-5 text-center text-sm text-gray-500">
+          <p className="mt-5 text-center text-sm" style={{ color: "var(--text-muted)" }}>
             ¿No tienes cuenta?{" "}
-            <Link href="/register" className="font-medium text-sage-600 hover:text-sage-700">
+            <Link href="/register" className="font-semibold" style={{ color: "var(--brand-primary)" }}>
               Regístrate gratis
             </Link>
           </p>

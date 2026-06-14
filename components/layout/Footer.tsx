@@ -1,59 +1,92 @@
 import Link from "next/link";
-import { ShoppingBag, Heart } from "lucide-react";
+
+function KladerMark({ size = 28 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" aria-hidden="true">
+      <path d="M50 14 a36 36 0 1 1 -25.5 10.5" stroke="#5C2E8E" strokeWidth="11" strokeLinecap="round" />
+      <circle cx="50" cy="14" r="6.4" fill="#FF7E6B" />
+    </svg>
+  );
+}
+
+const LINKS = {
+  Comprar: [
+    { label: "Mujer",      href: "/browse?category=mujer" },
+    { label: "Hombre",     href: "/browse?category=hombre" },
+    { label: "Calzado",    href: "/browse?category=calzado" },
+    { label: "Accesorios", href: "/browse?category=accesorios" },
+  ],
+  Vender: [
+    { label: "Publicar artículo", href: "/listings/new" },
+    { label: "Mi perfil",         href: "/profile" },
+    { label: "Mis pedidos",       href: "/orders" },
+  ],
+  Klader: [
+    { label: "Cómo funciona", href: "#" },
+    { label: "Comisiones",    href: "#" },
+    { label: "Ayuda",         href: "#" },
+    { label: "Privacidad",    href: "#" },
+  ],
+};
 
 export function Footer() {
   return (
-    <footer className="border-t border-gray-200 bg-white mt-auto">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <footer style={{ borderTop: "1px solid var(--border-subtle)", background: "var(--bg-surface)" }}>
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+          {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-3">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sage-600">
-                <ShoppingBag className="h-3.5 w-3.5 text-white" />
-              </div>
-              <span className="text-lg font-bold text-sage-700">klader</span>
+            <Link href="/" className="inline-flex items-center gap-2 mb-3">
+              <KladerMark size={26} />
+              <span
+                style={{
+                  fontFamily: "var(--font-display, 'Unbounded', sans-serif)",
+                  fontWeight: 600,
+                  fontSize: 16,
+                  letterSpacing: "-0.02em",
+                  color: "var(--brand-primary)",
+                }}
+              >
+                klader
+              </span>
             </Link>
-            <p className="text-sm text-gray-500 leading-relaxed">
+            <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
               Moda de segunda mano. Compra y vende de forma sostenible.
             </p>
           </div>
 
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Comprar</h3>
-            <ul className="space-y-2 text-sm text-gray-500">
-              <li><Link href="/browse?category=mujer" className="hover:text-sage-600">Mujer</Link></li>
-              <li><Link href="/browse?category=hombre" className="hover:text-sage-600">Hombre</Link></li>
-              <li><Link href="/browse?category=calzado" className="hover:text-sage-600">Calzado</Link></li>
-              <li><Link href="/browse?category=accesorios" className="hover:text-sage-600">Accesorios</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Vender</h3>
-            <ul className="space-y-2 text-sm text-gray-500">
-              <li><Link href="/listings/new" className="hover:text-sage-600">Publicar artículo</Link></li>
-              <li><Link href="/profile" className="hover:text-sage-600">Mi perfil</Link></li>
-              <li><Link href="/orders" className="hover:text-sage-600">Mis pedidos</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Klader</h3>
-            <ul className="space-y-2 text-sm text-gray-500">
-              <li><span className="cursor-default">Cómo funciona</span></li>
-              <li><span className="cursor-default">Comisiones</span></li>
-              <li><span className="cursor-default">Ayuda</span></li>
-              <li><span className="cursor-default">Privacidad</span></li>
-            </ul>
-          </div>
+          {/* Link columns */}
+          {Object.entries(LINKS).map(([section, links]) => (
+            <div key={section}>
+              <h3 className="text-sm font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
+                {section}
+              </h3>
+              <ul className="space-y-2">
+                {links.map(({ label, href }) => (
+                  <li key={label}>
+                    <Link
+                      href={href}
+                      className="text-sm transition-colors"
+                      style={{ color: "var(--text-muted)" }}
+                      onMouseEnter={e => ((e.target as HTMLElement).style.color = "var(--brand-primary)")}
+                      onMouseLeave={e => ((e.target as HTMLElement).style.color = "var(--text-muted)")}
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        <div className="mt-8 border-t border-gray-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-xs text-gray-400">
+        <div className="mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2"
+          style={{ borderTop: "1px solid var(--border-subtle)" }}>
+          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
             © {new Date().getFullYear()} Klader. Todos los derechos reservados.
           </p>
-          <p className="text-xs text-gray-400 flex items-center gap-1">
-            Hecho con <Heart className="h-3 w-3 text-red-400 fill-red-400" /> para la moda sostenible
+          <p className="text-xs flex items-center gap-1" style={{ color: "var(--text-muted)" }}>
+            Hecho con <span style={{ color: "var(--coral-400)" }}>♥</span> para la moda sostenible
           </p>
         </div>
       </div>
