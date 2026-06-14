@@ -97,7 +97,7 @@ export default function HomePage() {
                 color: "var(--plum-900)",
               }}
             >
-              Dale ropa<br />
+              Dale a tu ropa<br />
               <span style={{ color: "var(--brand-primary)" }}>una segunda vida.</span>
             </h1>
 
