@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { ListingCard } from "@/components/listings/ListingCard";
 import { ListingCardSkeleton } from "@/components/ui/Skeleton";
@@ -50,6 +51,7 @@ interface Listing {
 function BrowseContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { data: session } = useSession();
 
   const [listings, setListings] = useState<Listing[]>([]);
   const [total, setTotal] = useState(0);
@@ -67,6 +69,25 @@ function BrowseContent() {
     sort: searchParams.get("sort") || "recent",
     page: 1,
   });
+
+  const [userSizes, setUserSizes] = useState<{ clothingSize: string; shoeSize: string }>({ clothingSize: "", shoeSize: "" });
+
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    fetch(`/api/users/${session.user.id}`)
+      .then((r) => r.json())
+      .then((data) => {
+        const sizes = { clothingSize: data.clothingSize || "", shoeSize: data.shoeSize || "" };
+        setUserSizes(sizes);
+        setFilters((prev) => {
+          if (prev.size) return prev; // user already picked a size manually
+          const preferred = prev.category === "calzado" ? sizes.shoeSize : sizes.clothingSize;
+          if (!preferred) return prev;
+          return { ...prev, size: preferred };
+        });
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user?.id]);
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
@@ -95,11 +116,12 @@ function BrowseContent() {
   const updateFilter = (key: string, value: string) => {
     setFilters((prev) => {
       const next = { ...prev, [key]: value, page: 1 };
-      // Reset size when switching between calzado and clothing categories
       if (key === "category") {
         const wasCalzado = prev.category === "calzado";
         const isCalzado = value === "calzado";
-        if (wasCalzado !== isCalzado) next.size = "";
+        if (wasCalzado !== isCalzado) {
+          next.size = isCalzado ? userSizes.shoeSize : userSizes.clothingSize;
+        }
       }
       return next;
     });

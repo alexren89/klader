@@ -55,6 +55,8 @@ model User {
   location      String?
   rating        Float     @default(0)
   totalSales    Int       @default(0)
+  clothingSize  String?
+  shoeSize      String?
   suspended     Boolean   @default(false)
   vacationMode  Boolean   @default(false)
   createdAt     DateTime  @default(now())

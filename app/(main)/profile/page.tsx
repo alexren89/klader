@@ -9,10 +9,13 @@ import { ListingCard } from "@/components/listings/ListingCard";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
+const CLOTHING_SIZES = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+const SHOE_SIZES = ["35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46"];
+
 export default function ProfilePage() {
   const { data: session, update } = useSession();
   const router = useRouter();
-  const [form, setForm] = useState({ name: "", bio: "", location: "" });
+  const [form, setForm] = useState({ name: "", bio: "", location: "", clothingSize: "", shoeSize: "" });
   const [listings, setListings] = useState<any[]>([]);
   const [favorites, setFavorites] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
@@ -33,10 +36,16 @@ export default function ProfilePage() {
       fetch(`/api/listings?sellerId=${session.user.id}`).then((r) => r.json()),
       fetch("/api/favorites").then((r) => r.json()),
       fetch("/api/users/vacation").then((r) => r.json()),
-    ]).then(([listingsData, favData, vacData]) => {
+      fetch(`/api/users/${session.user.id}`).then((r) => r.json()),
+    ]).then(([listingsData, favData, vacData, userData]) => {
       setListings(listingsData.listings || []);
       setFavorites(Array.isArray(favData) ? favData : []);
       setVacationMode(vacData.vacationMode ?? false);
+      setForm((prev) => ({
+        ...prev,
+        clothingSize: userData.clothingSize || "",
+        shoeSize: userData.shoeSize || "",
+      }));
     });
   }, [session]);
 
@@ -233,6 +242,44 @@ export default function ProfilePage() {
                 onChange={(e) => setForm({ ...form, bio: e.target.value })}
                 className="input-field min-h-[80px] resize-y"
                 placeholder="Cuéntanos un poco sobre ti..." maxLength={500} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Talla de ropa</label>
+              <div className="flex flex-wrap gap-2">
+                {CLOTHING_SIZES.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, clothingSize: f.clothingSize === s ? "" : s }))}
+                    className={`rounded-lg px-3 py-1.5 text-sm font-medium border transition-colors ${
+                      form.clothingSize === s
+                        ? "bg-gray-900 text-white border-gray-900"
+                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Talla de calzado</label>
+              <div className="flex flex-wrap gap-2">
+                {SHOE_SIZES.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, shoeSize: f.shoeSize === s ? "" : s }))}
+                    className={`rounded-lg px-3 py-1.5 text-sm font-medium border transition-colors ${
+                      form.shoeSize === s
+                        ? "bg-gray-900 text-white border-gray-900"
+                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             </div>
             <button onClick={handleSave} disabled={saving} className="btn-primary">
               {saving && <Loader2 className="h-4 w-4 animate-spin" />}

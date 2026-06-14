@@ -15,6 +15,8 @@ export async function GET(
       image: true,
       bio: true,
       location: true,
+      clothingSize: true,
+      shoeSize: true,
       rating: true,
       totalSales: true,
       createdAt: true,
@@ -54,7 +56,7 @@ export async function PATCH(
     return NextResponse.json({ error: "No autorizado" }, { status: 403 });
   }
 
-  const { name, bio, location, image } = await req.json();
+  const { name, bio, location, image, clothingSize, shoeSize } = await req.json();
 
   const user = await prisma.user.update({
     where: { id: params.id },
@@ -63,6 +65,8 @@ export async function PATCH(
       ...(bio !== undefined && { bio }),
       ...(location !== undefined && { location }),
       ...(image && { image }),
+      ...(clothingSize !== undefined && { clothingSize: clothingSize || null }),
+      ...(shoeSize !== undefined && { shoeSize: shoeSize || null }),
     },
   });
 
