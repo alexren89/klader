@@ -1,6 +1,8 @@
 import { Resend } from "resend";
 
-export const resend = new Resend(process.env.RESEND_API_KEY);
+const key = process.env.RESEND_API_KEY;
+export const resendConfigured = !!(key && key !== "re_...");
+export const resend = new Resend(resendConfigured ? key : "re_placeholder_not_configured");
 
 export async function sendNewMessageEmail({
   to,
@@ -13,6 +15,7 @@ export async function sendNewMessageEmail({
   listingTitle: string;
   conversationId: string;
 }) {
+  if (!resendConfigured) return;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   await resend.emails.send({
     from: process.env.EMAIL_FROM || "noreply@klader.com",
@@ -48,6 +51,7 @@ export async function sendOrderConfirmationEmail({
   totalPrice: number;
   orderId: string;
 }) {
+  if (!resendConfigured) return;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   await resend.emails.send({
     from: process.env.EMAIL_FROM || "noreply@klader.com",
