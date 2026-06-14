@@ -54,7 +54,7 @@ export async function PATCH(
     return NextResponse.json({ error: "No autorizado" }, { status: 403 });
   }
 
-  const { name, bio, location } = await req.json();
+  const { name, bio, location, image } = await req.json();
 
   const user = await prisma.user.update({
     where: { id: params.id },
@@ -62,6 +62,7 @@ export async function PATCH(
       ...(name && { name }),
       ...(bio !== undefined && { bio }),
       ...(location !== undefined && { location }),
+      ...(image && { image }),
     },
   });
 

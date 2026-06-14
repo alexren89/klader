@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Save, Loader2, MapPin, Heart, Palmtree, Eye, EyeOff } from "lucide-react";
+import { Save, Loader2, MapPin, Heart, Palmtree, Eye, EyeOff, Camera } from "lucide-react";
 import { ListingCard } from "@/components/listings/ListingCard";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -17,6 +17,7 @@ export default function ProfilePage() {
   const [favorites, setFavorites] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [vacationMode, setVacationMode] = useState(false);
   const [vacationLoading, setVacationLoading] = useState(false);
   const [hidingId, setHidingId] = useState<string | null>(null);
@@ -54,6 +55,35 @@ export default function ProfilePage() {
       }
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    try {
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64 }),
+      });
+      if (!uploadRes.ok) return;
+      const { url } = await uploadRes.json();
+      const saveRes = await fetch(`/api/users/${session?.user?.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: url }),
+      });
+      if (saveRes.ok) await update({ image: url });
+    } finally {
+      setUploadingAvatar(false);
     }
   };
 
@@ -104,6 +134,12 @@ export default function ProfilePage() {
                   {session.user.name?.[0]?.toUpperCase()}
                 </div>
               )}
+              <label className="absolute bottom-0 right-0 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-gray-900 text-white shadow hover:bg-gray-700 transition-colors">
+                {uploadingAvatar
+                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  : <Camera className="h-3.5 w-3.5" />}
+                <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} disabled={uploadingAvatar} />
+              </label>
             </div>
             <h2 className="font-bold text-gray-900">{session.user.name}</h2>
             <p className="text-sm text-gray-400 mt-0.5">{session.user.email}</p>
